@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *	Source: https://introcs.cs.princeton.edu/java/92symbolic/Rational.java.html
- *	With additions and improvements
+ *	with additions and improvements
  ******************************************************************************/
 
 import java.math.BigDecimal;
@@ -23,10 +23,12 @@ public final class Rational implements Comparable<Rational> {
 		this(0, 1);
 	}
 	
+	// Rational as long number
 	public Rational(long numerator) {		
 		this(numerator, 1);
 	}
 	
+	// copy constructor
 	public Rational(Rational rational) {
 		
 		if (rational == null) {
@@ -37,6 +39,7 @@ public final class Rational implements Comparable<Rational> {
 		denominator = rational.denominator;
 	}
 	
+	// create Rational number
 	public Rational(long numerator, long denominator) {
 		
 		if (denominator < 0 && numerator < 0) {
@@ -156,6 +159,7 @@ public final class Rational implements Comparable<Rational> {
         return GCD(n, m % n);
 	}
 	
+	// Return extended gcd defined for Rationals
 	static Rational GCD(Rational x, Rational y) {
 		
 		long m = x.numerator   * y.denominator;
@@ -173,15 +177,17 @@ public final class Rational implements Comparable<Rational> {
 		return m * (n / GCD(m, n)); 
 	}
 	
+	// Return extended lcm defined for Rationals
 	static Rational LCM(Rational x, Rational y) {
 		return x.multiply(y.divide(GCD(x, y)));
 	}
 
-	// Returns addition of this + that
+	// Returns addition of this + long value
 	public Rational add(long value) {
 		return this.add(new Rational(value));
 	}
 	
+	// Returns addition of this + that
 	public Rational add(Rational that) {
 
 		// special cases
@@ -212,20 +218,23 @@ public final class Rational implements Comparable<Rational> {
 		return this.add(that).divide(2);
 	}
 
-	// Returns this - that
+	// Returns this - long value
 	public Rational subtract(int value) {
 		return this.subtract(new Rational(value));
 	}
 	
+	// Returns this - that
 	public Rational subtract(Rational that) {
 		return this.add(new Rational(-that.numerator, this.denominator));
 	}
 	
-	// Returns multiplication of this * that
+	// Returns multiplication of this * some value
 	public Rational multiply(int value) {
 		return this.multiply(new Rational(value));
 	}
 
+	
+	// Returns multiplication of this * that
 	public Rational multiply(Rational that) {
 
 		// reduce p1/q2 & p2/q1, then multiply, where this = p1/q1 & that = p2/q2
@@ -235,11 +244,12 @@ public final class Rational implements Comparable<Rational> {
 		return new Rational(right.numerator * left.numerator, right.denominator * left.denominator);
 	}
 
-	// Returns this / that
+	// Returns this / long value
 	public Rational divide(long value) {
 		return this.divide(new Rational(value));
 	}
 	
+	// Returns this / this
 	public Rational divide(Rational that) {
 		return this.multiply(that.invert());
 	}
@@ -249,7 +259,7 @@ public final class Rational implements Comparable<Rational> {
 		return new Rational(denominator, numerator);
 	}
 	
-	// Returns nth power of Rational
+	// Returns integer nth power of Rational
 	public Rational pow(int n) {
 		
 		Rational R = this;
@@ -261,7 +271,7 @@ public final class Rational implements Comparable<Rational> {
 		return (n > 0) ? R : R.invert();
 	}
 
-	// Returns list of Coefficients for Continued Fraction Expansion
+	// Returns list of Coefficients of this Rational Continued Fraction Expansion
 	static ArrayList<Long> CFE(Double v, int terms) {
 		
 		if (terms <= 0) {
@@ -270,7 +280,7 @@ public final class Rational implements Comparable<Rational> {
 		
 		long decimal;
 		BigDecimal fractional;
-		BigDecimal error = new BigDecimal("0.00000001");
+		BigDecimal error = new BigDecimal("0.00000001"); 
 		BigDecimal value = new BigDecimal(v.toString());
 		ArrayList<Long> coefficients = new ArrayList<Long>();
 
@@ -286,19 +296,18 @@ public final class Rational implements Comparable<Rational> {
 			value = BigDecimal.ONE.divide(fractional, 40, RoundingMode.HALF_UP);  // 1 / fractional
 																							
 		}
-		
 		return coefficients;
 	}
 
-	// Returns nearest Rational Approximations of Double with CFE method
-	static Rational approximateCFE(Double v, int term) {
+	// Returns the nth nearest rational approximation of v using CFE partial fractions
+	static Rational approxWithCFE(Double v, int nth) {
 		
 		// calculate cfe coefficients
-		ArrayList<Long> coefficients = CFE(v, term);
+		ArrayList<Long> coefficients = CFE(v, nth);
 		
 		// check out of bounds
 		int size = coefficients.size();
-		if(term < size) size = term;
+		if(nth < size) size = nth;
 		
 		Rational R = new Rational(coefficients.get(size - 1));
 		for (int i = size - 2; i >= 0; i--) {
@@ -309,8 +318,8 @@ public final class Rational implements Comparable<Rational> {
 		return new Rational(R);
 	}
 
-	// Returns nearest Rational Approximations of Double with Stern-Broco tree
-	static Rational approximateSBT(Double x, int term) {
+	// Returns nth rational approximation of v using the binary search in Stern-Brocot tree 
+	static Rational approxWithSBT(Double x, int nth) {
 		
 		//in order to round errors from double
 		double digits = Math.pow(10, 10);   
@@ -324,7 +333,7 @@ public final class Rational implements Comparable<Rational> {
 		double bestError = Math.abs(best.toDouble() - x);
 		
 		// do Stern-Brocot binary search
-		while(term-- > 0 && bestError != 0) {
+		while(nth-- > 0 && bestError != 0) {
 			
 			// check if best has changed or not
 			boolean flag = true;

@@ -1,6 +1,14 @@
+
+// Definition
+/*
+ * A chord, in music, is any harmonic set of pitches consisting 
+ * of two or more (usually three or more) notes (also called "pitches") 
+ * that are heard as if sounding simultaneously.
+ * 
+ */
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class Chord {
@@ -15,12 +23,14 @@ public class Chord {
 		this("A4", "1");
 	}
 	
+	// copy constructor
 	public Chord(Chord c) {
 		this.root = c.notes.get(0);
 		this.notes = new ArrayList<Note>(c.getNotes());
 		this.structure = new Structure(c.getStructure());
 	}
 	
+	// create new Chord with notes, structure & root will be created automaticaly
 	public Chord(ArrayList<Note> notes) {
 		notes.sort(null);
 		this.root = notes.get(0);
@@ -28,6 +38,7 @@ public class Chord {
 		this.structure = StructureFromNotes(notes);
 	}
 
+	// create new Chord with root & pattern, notes & structure will be created automaticaly
 	public Chord(String root, String pattern) {
 
 		if (root == null) {
@@ -44,6 +55,7 @@ public class Chord {
 		this.notes.sort(null);
 	}
 
+	// create new Chord with root & stucture, notes will be created automaticaly
 	public Chord(Note root, Structure structure) {
 		
 		if (root == null || structure == null) {
@@ -60,6 +72,7 @@ public class Chord {
 		this.notes.sort(null);
 	}
 
+	
 	// Setters
 	public void setRoot(Note root) {
 
@@ -95,6 +108,7 @@ public class Chord {
 		return notes;
 	}
 	
+	
 	@Override
     public boolean equals(Object that) {
 		
@@ -119,6 +133,13 @@ public class Chord {
 	
 	// Methods
 	
+	/*
+	 * UNDER CONSTRUCTION
+	 * needs inprovment and also this method might not yield usefull results
+	 */
+	// Calculates the GCU & LCO of every subChord of 
+	// this Chord, in an attemp to find possible solutions
+	// to the Chord
 	public TreeMap<Note, Integer> solutions() {
 		
 		TreeMap<Note, Integer> solutions = new TreeMap<Note, Integer>();
@@ -149,6 +170,8 @@ public class Chord {
 		return solutions;
 	}
 	
+	// Calculates all possible Chord combinations
+	// using the notes that are part of this Chord
 	public ArrayList<Chord> subChords() {
 		
 		// set to store all the subsequences 
@@ -193,7 +216,7 @@ public class Chord {
 	    return list;
 	}
 	
-	// Returns the Greatest Common Undertone of chord notes
+	// Calculates and returns the Greatest Common Undertone of the chord notes
 	public Note GCU() {
 		
 		if(notes.size() == 1) {
@@ -202,7 +225,7 @@ public class Chord {
 		
 		Rational[] intervals = new Rational[structure.getIntervals().size()];
 		for(int i = 0; i < intervals.length; i++) {
-			intervals[i] = structure.getIntervals().get(i).rationalize();
+			intervals[i] = structure.getIntervals().get(i).approxRatio();
 		}
 				
 		Rational gcd = Rational.GCD(intervals[0], intervals[1]);
@@ -214,7 +237,7 @@ public class Chord {
 		return new Note(notes.get(0).down(i));
 	}
 	
-	// Returns the Least Common Overtone of chord notes 
+	// Calculates and returns the Least Common Overtone of the chord notes
 	public Note LCO() {
 		
 		if(notes.size() == 1) {
@@ -223,7 +246,7 @@ public class Chord {
 		
 		Rational[] intervals = new Rational[structure.getIntervals().size()];
 		for(int i = 0; i < intervals.length; i++) {
-			intervals[i] = structure.getIntervals().get(i).rationalize();
+			intervals[i] = structure.getIntervals().get(i).approxRatio();
 			//System.out.println(intervals[i]);
 		}
 				
@@ -242,8 +265,8 @@ public class Chord {
 	}
 	
 	// Returns a normalized measure of dissonance
-	public Double logComplexity() {
-		return this.getStructure().logComplexity();
+	public Double normComplexity() {
+		return this.getStructure().normComplexity();
 	}
 	
 	// Returns the nth inversion of the chord
@@ -257,6 +280,9 @@ public class Chord {
 		Structure structure = this.structure.inversion(num);
 		return new Chord(newRoot, structure);
 	}
+	
+	
+	// Conversions
 	
 	// Returns the Note pattern 
 	private Structure StructureFromNotes(ArrayList<Note> notes) {

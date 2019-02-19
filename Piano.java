@@ -1,9 +1,12 @@
+import java.util.ArrayList;
 
 public class Piano {
 
 	public static void main(String[] args) {
-				
-		System.out.println(new Chord("A4", "1 3 5"));
+						
+		ArrayList<Structure> list = Structure.allCombinations(3);
+		for (Structure s : list) 
+			System.out.println(s + " " + s.complexity());
 		
 	}
 }
